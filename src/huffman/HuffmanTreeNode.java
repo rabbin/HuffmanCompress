@@ -1,27 +1,27 @@
-package haffman;
+package huffman;
 
-class HaffmanTreeNode<E> implements Comparable<HaffmanTreeNode<E>> {
+class HuffmanTreeNode<E> implements Comparable<HuffmanTreeNode<E>> {
     E node;
     double weight;
-    HaffmanTreeNode<E> leftChild = null;
-    HaffmanTreeNode<E> rightChild = null;
+    HuffmanTreeNode<E> leftChild = null;
+    HuffmanTreeNode<E> rightChild = null;
     String code = "";
 
-    HaffmanTreeNode(E node, double count) {
+    HuffmanTreeNode(E node, double count) {
         this.node = node;
         this.weight = count;
     }
 
-    HaffmanTreeNode() {
+    HuffmanTreeNode() {
         this.node = null;
         this.node = null;
     }
 
-    void setLeftChild(HaffmanTreeNode<E> leftChild) {
+    void setLeftChild(HuffmanTreeNode<E> leftChild) {
         this.leftChild = leftChild;
     }
 
-    void setRightChild(HaffmanTreeNode<E> rightChild) {
+    void setRightChild(HuffmanTreeNode<E> rightChild) {
         this.rightChild = rightChild;
     }
 
@@ -31,7 +31,7 @@ class HaffmanTreeNode<E> implements Comparable<HaffmanTreeNode<E>> {
     }
 
     @Override
-    public int compareTo(HaffmanTreeNode o) {
+    public int compareTo(HuffmanTreeNode o) {
         double res = this.weight - o.weight;
         if (res > 0) {
             return 1;

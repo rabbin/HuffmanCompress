@@ -1,19 +1,19 @@
-package haffman;
+package huffman;
 
 import java.io.*;
 import java.util.*;
 
-public class HaffmanCompress<E> {
+public class HuffmanCompress<E> {
 
     Map<E, String> haffmanCompressCodeMap = new HashMap<E, String>();
 
-    HaffmanCompress() {
+    HuffmanCompress() {
 
     }
 
     public void compress(String filePath) {
 
-        List<HaffmanTreeNode<E>> wordCountList = readFileByCharsAndWordCount(filePath);
+        List<HuffmanTreeNode<E>> wordCountList = readFileByCharsAndWordCount(filePath);
         createHaffmanTree(wordCountList);
 
         Reader reader = null;
@@ -113,7 +113,7 @@ public class HaffmanCompress<E> {
     }//compress
 
 
-    private List<HaffmanTreeNode<E>> readFileByCharsAndWordCount(String fileName) {
+    private List<HuffmanTreeNode<E>> readFileByCharsAndWordCount(String fileName) {
 
         Map<Character, Integer> wordCountMap = new HashMap<>(1000);
 
@@ -147,22 +147,22 @@ public class HaffmanCompress<E> {
             }//if
         }
 
-        List<HaffmanTreeNode<E>> wordCountList = new ArrayList<HaffmanTreeNode<E>>(1000);
+        List<HuffmanTreeNode<E>> wordCountList = new ArrayList<HuffmanTreeNode<E>>(1000);
         for (Map.Entry<Character, Integer> entry : wordCountMap.entrySet()) {
-            wordCountList.add(new HaffmanTreeNode(entry.getKey(), entry.getValue()));
+            wordCountList.add(new HuffmanTreeNode(entry.getKey(), entry.getValue()));
         }
         return wordCountList;
     }
 
-    private void createHaffmanTree(List<HaffmanTreeNode<E>> wordCountList) {
+    private void createHaffmanTree(List<HuffmanTreeNode<E>> wordCountList) {
 
         while (wordCountList.size() > 1) {
             sort(wordCountList);
 
-            HaffmanTreeNode<E> leftChild = wordCountList.get(wordCountList.size() - 1);
-            HaffmanTreeNode<E> rightChild = wordCountList.get(wordCountList.size() - 2);
+            HuffmanTreeNode<E> leftChild = wordCountList.get(wordCountList.size() - 1);
+            HuffmanTreeNode<E> rightChild = wordCountList.get(wordCountList.size() - 2);
 
-            HaffmanTreeNode<E> parrent = new HaffmanTreeNode<E>(null, leftChild.weight + rightChild.weight);
+            HuffmanTreeNode<E> parrent = new HuffmanTreeNode<E>(null, leftChild.weight + rightChild.weight);
             parrent.setLeftChild(leftChild);
             parrent.setRightChild(rightChild);
 
@@ -179,7 +179,7 @@ public class HaffmanCompress<E> {
 
     }//createHaffmanTree
 
-    private void updateChildHaffmanCode(String parrentCode, HaffmanTreeNode<E> node) {
+    private void updateChildHaffmanCode(String parrentCode, HuffmanTreeNode<E> node) {
 
 
         node.code = parrentCode + node.code;
@@ -195,7 +195,7 @@ public class HaffmanCompress<E> {
         }
     }
 
-    private void sort(List<HaffmanTreeNode<E>> wordCountList) {
+    private void sort(List<HuffmanTreeNode<E>> wordCountList) {
 
         //建小顶堆
         for (int i = (wordCountList.size() - 1) / 2; i >= 0; i--) {
@@ -208,17 +208,17 @@ public class HaffmanCompress<E> {
 
     }//sort
 
-    private void heapAdjust(List<HaffmanTreeNode<E>> wordCountList, int parrentIndex, int end) {
+    private void heapAdjust(List<HuffmanTreeNode<E>> wordCountList, int parrentIndex, int end) {
 
 
         for (int i = 2 * parrentIndex + 1; i < end; i = i * 2 + 1) {
 
-            HaffmanTreeNode parrent = wordCountList.get(parrentIndex);
+            HuffmanTreeNode parrent = wordCountList.get(parrentIndex);
 
             if (i + 1 < end && wordCountList.get(i).compareTo(wordCountList.get(i + 1)) > 0) {
                 i++;
             }
-            HaffmanTreeNode maxChild = wordCountList.get(i);
+            HuffmanTreeNode maxChild = wordCountList.get(i);
             if (parrent.compareTo(maxChild) <= 0) {
                 break;
             } else {
@@ -230,8 +230,8 @@ public class HaffmanCompress<E> {
 
     }//heapAdjust
 
-    private void swap(HaffmanTreeNode<E> first, HaffmanTreeNode<E> second) {
-        HaffmanTreeNode<E> temp = new HaffmanTreeNode<>();
+    private void swap(HuffmanTreeNode<E> first, HuffmanTreeNode<E> second) {
+        HuffmanTreeNode<E> temp = new HuffmanTreeNode<>();
         temp.node = first.node;
         temp.weight = first.weight;
         temp.leftChild = first.leftChild;

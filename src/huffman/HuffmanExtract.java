@@ -1,14 +1,14 @@
-package haffman;
+package huffman;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HaffmanExtract<E> {
+public class HuffmanExtract<E> {
     Map<String, E> haffmanExtractCodeMap = new HashMap<String, E>();
     int size = 0;
 
-    HaffmanExtract() {
+    HuffmanExtract() {
 
     }
 

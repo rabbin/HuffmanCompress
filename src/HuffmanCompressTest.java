@@ -1,19 +1,19 @@
-import haffman.Haffman;
-import haffman.HaffmanCompress;
+import huffman.Huffman;
+import huffman.HuffmanCompress;
 
 import java.io.File;
 
-public class HaffmanCompressTest {
+public class HuffmanCompressTest {
     public static void main(String[] args) {
 
         System.out.println("**压缩*****：");
         String fileToBeCompressPath = "D:\\cs\\java\\HuffmanCompress\\src\\test.txt";
 
-        HaffmanCompress<Character> haffmanCompress = Haffman.newHaffmanCompress();
+        HuffmanCompress<Character> huffmanCompress = Huffman.newHaffmanCompress();
 
         long begin = System.currentTimeMillis();
 
-        haffmanCompress.compress(fileToBeCompressPath);
+        huffmanCompress.compress(fileToBeCompressPath);
 
         long end = System.currentTimeMillis();
         long time = (end - begin) / 1000;
