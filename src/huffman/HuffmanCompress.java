@@ -3,9 +3,7 @@ package huffman;
 import java.io.*;
 import java.util.*;
 
-public class HuffmanCompress<E> {
-
-    Map<E, String> haffmanCompressCodeMap = new HashMap<E, String>();
+public class HuffmanCompress{
 
     HuffmanCompress() {
 
@@ -13,72 +11,77 @@ public class HuffmanCompress<E> {
 
     public void compress(String filePath) {
 
-        List<HuffmanTreeNode<E>> wordCountList = readFileByCharsAndWordCount(filePath);
-        createHaffmanTree(wordCountList);
+        List<HuffmanTreeNode<Character>> wordCountList = readFileAndWordCount(filePath);
+        Map<Character, String> huffmanCompressCodeMap = HuffmanCodeGenerator.createHuffmanCode(wordCountList);
 
         Reader reader = null;
         OutputStream out = null;
-
-        Writer outDic = null;
+        BufferedWriter outDic = null;
         File file;
+
         try {
+
             file = new File(filePath);
-            reader = new InputStreamReader(new FileInputStream(file));
-
-            outDic = new OutputStreamWriter(new FileOutputStream(file.getParent() + "\\" + file.getName() + ".dic"));
-            out = new FileOutputStream(new File(file.getParent() + "\\" + file.getName() + ".hc"));
+            reader =  new InputStreamReader(new FileInputStream(file));
             String codeBuffer = "";
-
-            int temp;
-            char tempChar;
+            char[] chars = new char[1000];
             int count = 0;
-            while ((temp = reader.read()) != -1) {
-// TODO: 2018/5/1 todo 用BufferedReader读。
+            int numCharsPerRead;
+            while ((numCharsPerRead= reader.read(chars)) > 0) {
 
-                tempChar = (char) temp;
-                if ((tempChar) != '\r') {
-                    codeBuffer += (haffmanCompressCodeMap.get(tempChar));
-                    count++;
-                }//if
+                for(int i = 0;i<numCharsPerRead;i++){
+                    if (chars[i] != '\r') {
+                        codeBuffer += (huffmanCompressCodeMap.get(chars[i]));
+                        count++;
+                    }//if
+                }
 
-            }//while temp = reader.read()) != -1
+            }//(numCharsPerRead= reader.read(chars)) > 0
 
 
-            outDic.write(String.valueOf(count));
-            outDic.write("\n");
-            outDic.flush();
+            out = new FileOutputStream(new File(file.getParent() + "\\" + file.getName() + ".hc"));
 
             int size = codeBuffer.length();
-            byte[] tmp = new byte[1];
+            byte[] tmp = new byte[1000];
+            int j =0;
             for (int i = 0; i < size; i++) {
                 if (codeBuffer.charAt(i) == '1') {
-                    tmp[0] |= 1;
+                    tmp[j] |= 1;
                 }
                 if (i % 8 == 7) {
-                    out.write(tmp);
-
-                    tmp[0] = 0;
+                    j++;
+                    if(j >= 1000){
+                        out.write(tmp);
+                        j = 0;
+                    }
                 }
-                tmp[0] <<= 1;
+                tmp[j] <<= 1;
             }//for
 
-            for (int j = 8 - (size % 8); j > 1; j--) {
-                tmp[0] <<= 1;
+            for (int m = 8 - (size % 8); m > 1; m--) {
+                tmp[j] <<= 1;
             }
 
-            out.write(tmp);
+            for(int i = 0 ;i<=j;i++){
+                out.write(tmp[i]);
+            }
             out.flush();
 
-            for (Map.Entry<E, String> entry : haffmanCompressCodeMap.entrySet()) {
-                if ((Character) entry.getKey() == '\n') {
+            outDic = new BufferedWriter(new FileWriter(file.getParent() + "\\" + file.getName() + ".dic"));
+            outDic.write(String.valueOf(count));
+            outDic.newLine();
+            outDic.flush();
+
+            for (Map.Entry<Character, String> entry : huffmanCompressCodeMap.entrySet()) {
+                if ( entry.getKey() == '\n') {
                     outDic.write("newLine" + ":" + entry.getValue());
-                } else if((Character) entry.getKey() == ':'){
+                } else if(entry.getKey() == ':'){
                     outDic.write("colon" + ":" + entry.getValue());
                 } else {
                     outDic.write(entry.getKey() + ":" + entry.getValue());
                 }
 
-                outDic.write("\n");
+                outDic.newLine();
             }
             outDic.flush();
 
@@ -113,31 +116,33 @@ public class HuffmanCompress<E> {
     }//compress
 
 
-    private List<HuffmanTreeNode<E>> readFileByCharsAndWordCount(String fileName) {
+    private List<HuffmanTreeNode<Character>> readFileAndWordCount(String fileName) {
 
         Map<Character, Integer> wordCountMap = new HashMap<>(1000);
 
-        Reader reader = null;
+        InputStreamReader reader = null;
         try {
-            // TODO: 2018/5/2 todo 用BufferedReader读
-            reader = new InputStreamReader(new FileInputStream(new File(fileName)));
-            int temp;
-            char tempChar;
-            while ((temp = reader.read()) != -1) {
-                tempChar = (char) temp;
-                if ((tempChar) != '\r') {
-                    if ((wordCountMap.get(tempChar) == null)) {
-                        wordCountMap.put(tempChar, 1);
-                    } else {
-                        wordCountMap.put(tempChar, wordCountMap.get(tempChar) + 1);
-                    }
-                }//if ((tempChar) != '\r')
-            }// while ((temp = reader.read()) != -1)
+            reader = new InputStreamReader(new FileInputStream(fileName));
+
+            char[] chars = new char[1000];
+            int numCharsPerRead;
+            while ((numCharsPerRead= reader.read(chars)) > 0) {
+
+                for(int i = 0;i<numCharsPerRead;i++){
+                    if (chars[i] != '\r') {
+                        if ((wordCountMap.get(chars[i]) == null)) {
+                            wordCountMap.put(chars[i], 1);
+                        } else {
+                            wordCountMap.put(chars[i], wordCountMap.get(chars[i]) + 1);
+                        }
+                    }//if
+                }
+
+            }//(numCharsPerRead= reader.read(chars)) > 0
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-
             if (reader != null) {
                 try {
                     reader.close();
@@ -147,110 +152,13 @@ public class HuffmanCompress<E> {
             }//if
         }
 
-        List<HuffmanTreeNode<E>> wordCountList = new ArrayList<HuffmanTreeNode<E>>(1000);
+        List<HuffmanTreeNode<Character>> wordCountList = new ArrayList<>(1000);
         for (Map.Entry<Character, Integer> entry : wordCountMap.entrySet()) {
-            wordCountList.add(new HuffmanTreeNode(entry.getKey(), entry.getValue()));
+            wordCountList.add(new HuffmanTreeNode<>(entry.getKey(), entry.getValue()));
         }
+
         return wordCountList;
     }
 
-    private void createHaffmanTree(List<HuffmanTreeNode<E>> wordCountList) {
-
-        while (wordCountList.size() > 1) {
-            sort(wordCountList);
-
-            HuffmanTreeNode<E> leftChild = wordCountList.get(wordCountList.size() - 1);
-            HuffmanTreeNode<E> rightChild = wordCountList.get(wordCountList.size() - 2);
-
-            HuffmanTreeNode<E> parrent = new HuffmanTreeNode<E>(null, leftChild.weight + rightChild.weight);
-            parrent.setLeftChild(leftChild);
-            parrent.setRightChild(rightChild);
-
-            updateChildHaffmanCode("1", leftChild);
-            updateChildHaffmanCode("0", rightChild);
-
-            wordCountList.remove(leftChild);
-            wordCountList.remove(rightChild);
-            wordCountList.add(parrent);
-
-
-        }
-
-
-    }//createHaffmanTree
-
-    private void updateChildHaffmanCode(String parrentCode, HuffmanTreeNode<E> node) {
-
-
-        node.code = parrentCode + node.code;
-        if (node.node != null) {
-            haffmanCompressCodeMap.put(node.node, node.code);
-        }
-
-        if (node.leftChild != null) {
-            updateChildHaffmanCode(String.valueOf(node.code.charAt(0)), node.leftChild);
-        }
-        if (node.rightChild != null) {
-            updateChildHaffmanCode(String.valueOf(node.code.charAt(0)), node.rightChild);
-        }
-    }
-
-    private void sort(List<HuffmanTreeNode<E>> wordCountList) {
-
-        //建小顶堆
-        for (int i = (wordCountList.size() - 1) / 2; i >= 0; i--) {
-            heapAdjust(wordCountList, i, wordCountList.size());
-        }
-        for (int i = wordCountList.size() - 1; i >= 0; i--) {
-            swap(wordCountList.get(0), wordCountList.get(i));
-            heapAdjust(wordCountList, 0, i);
-        }
-
-    }//sort
-
-    private void heapAdjust(List<HuffmanTreeNode<E>> wordCountList, int parrentIndex, int end) {
-
-
-        for (int i = 2 * parrentIndex + 1; i < end; i = i * 2 + 1) {
-
-            HuffmanTreeNode parrent = wordCountList.get(parrentIndex);
-
-            if (i + 1 < end && wordCountList.get(i).compareTo(wordCountList.get(i + 1)) > 0) {
-                i++;
-            }
-            HuffmanTreeNode maxChild = wordCountList.get(i);
-            if (parrent.compareTo(maxChild) <= 0) {
-                break;
-            } else {
-                swap(parrent, maxChild);
-                parrentIndex = i;
-            }
-        }
-
-
-    }//heapAdjust
-
-    private void swap(HuffmanTreeNode<E> first, HuffmanTreeNode<E> second) {
-        HuffmanTreeNode<E> temp = new HuffmanTreeNode<>();
-        temp.node = first.node;
-        temp.weight = first.weight;
-        temp.leftChild = first.leftChild;
-        temp.rightChild = first.rightChild;
-        temp.code = first.code;
-
-        first.node = second.node;
-        first.weight = second.weight;
-        first.leftChild = second.leftChild;
-        first.rightChild = second.rightChild;
-        first.code = second.code;
-
-        second.node = temp.node;
-        second.weight = temp.weight;
-        second.leftChild = temp.leftChild;
-        second.rightChild = temp.rightChild;
-        second.code = temp.code;
-
-
-    }
 
 }

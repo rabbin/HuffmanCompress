@@ -9,7 +9,7 @@ public class HuffmanCompressTest {
         System.out.println("**压缩*****：");
         String fileToBeCompressPath = "D:\\cs\\java\\HuffmanCompress\\src\\test.txt";
 
-        HuffmanCompress<Character> huffmanCompress = Huffman.newHaffmanCompress();
+        HuffmanCompress huffmanCompress = Huffman.newHaffmanCompress();
 
         long begin = System.currentTimeMillis();
 
