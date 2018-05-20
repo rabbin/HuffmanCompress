@@ -88,7 +88,6 @@ public class HuffmanCodeGenerator{
     }//heapAdjust
 
     static private <E> void swap(HuffmanTreeNode<E> first, HuffmanTreeNode<E> second) {
-
         HuffmanTreeNode<E> temp = new HuffmanTreeNode<>();
         temp.node = first.node;
         temp.weight = first.weight;
